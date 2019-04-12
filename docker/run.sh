@@ -41,16 +41,14 @@ echo "Shared directory: ${HOST_DIR}"
 
 if [ ! -f $XAUTH ]
 then
+    touch $XAUTH
     xauth_list=$(xauth nlist :0 | sed -e 's/^..../ffff/')
     if [ ! -z "$xauth_list" ]
     then
         echo $xauth_list | xauth -f $XAUTH nmerge -
-    else
-        touch $XAUTH
     fi
     chmod a+r $XAUTH
 fi
-
 
 docker run -it --rm \
     --runtime=nvidia \
@@ -60,6 +58,5 @@ docker run -it --rm \
     --env="XAUTHORITY=$XAUTH" \
     --env="DISPLAY=$DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
-    -u autoware \
     --net=host \
     $DOCKER_HUB_REPO:$TAG
